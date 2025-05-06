@@ -1,0 +1,38 @@
+html = 
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Registro</title>
+    <link rel="stylesheet" href="styles/style.css">
+</head>
+
+<body>
+    <div class="login-container">
+        <div class="login-form">
+            <h2 class="login-title">Registrarse</h2>
+            <form id="register-form">
+                <div class="input-group">
+                    <label for="new-username">Usuario</label>
+                    <input type="text" id="new-username" name="new-username" required
+                        placeholder="Elige un nombre de usuario">
+                </div>
+                <div class="input-group">
+                    <label for="new-password">Contraseña</label>
+                    <input type="password" id="new-password" name="new-password" required
+                        placeholder="Crea una contraseña">
+                </div>
+                <div class="input-group">
+                    <label for="confirm-password">Confirmar Contraseña</label>
+                    <input type="password" id="confirm-password" name="confirm-password" required
+                        placeholder="Repite tu contraseña">
+                </div>
+                <button type="submit" class="login-btn">Registrarse</button>
+            </form>
+        </div>
+    </div>
+    <script src="scripts/register.js"></script>
+</body>
+
+</html>
