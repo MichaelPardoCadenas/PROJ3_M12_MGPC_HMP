@@ -1,4 +1,3 @@
-
 document.addEventListener('DOMContentLoaded', () => {
     console.log("Script cargado correctamente");
 
@@ -6,60 +5,74 @@ document.addEventListener('DOMContentLoaded', () => {
     const accumulatedPrizeElement = document.getElementById('accumulated-prize');
     const questionTextElement = document.getElementById('question-text');
 
-    let questionNumber = 1;
+    let questions = []; // array total de preguntas
+    let currentIndex = 0;
     let prize = 0;
-    let level = 1;
     let correctAnswer = null;
-    const questionsPerLevel = 5;
 
-    const prizePerQuestion = [50, 100, 150, 200, 250, 500, 600, 700, 800, 900, 1000, 1200, 1400, 1600, 2000];
+    function getPrizeForLevel(level) {
+        switch (level) {
+            case 1: return 50;
+            case 2: return 150;
+            case 3: return 300;
+            default: return 0;
+        }
+    }
 
-    async function loadQuestion() {
+    async function loadAllQuestions() {
         try {
-            const response = await fetch(`http://localhost/projecte3/backend/api/get_question.php?level=${level}`);
-            const result = await response.json();
+            const all = [];
 
-            if (result.status === 'success') {
-                const question = result.question;
-
-                questionTextElement.textContent = question.question_text;
-                document.getElementById('answerA').textContent = `A) ${question.answer_a}`;
-                document.getElementById('answerB').textContent = `B) ${question.answer_b}`;
-                document.getElementById('answerC').textContent = `C) ${question.answer_c}`;
-                document.getElementById('answerD').textContent = `D) ${question.answer_d}`;
-                
-                currentQuestionElement.textContent = questionNumber;
-
-                correctAnswer = question.correct_answer;
-                console.log("Correcta era:", correctAnswer);
-            } else {
-                alert(result.message);
+            for (let lvl = 1; lvl <= 3; lvl++) {
+                const res = await fetch(`http://localhost/projecte3/backend/api/get_question.php?level=${lvl}&amount=5`);
+                const data = await res.json();
+                if (data.status === 'success') {
+                    all.push(...data.questions);
+                } else {
+                    alert(`Error al cargar preguntas de nivel ${lvl}`);
+                    return;
+                }
             }
+
+            questions = all;
+            loadQuestion();
         } catch (error) {
-            alert('Error al cargar la pregunta.');
+            alert('Error al cargar preguntas.');
             console.error(error);
         }
+    }
+
+    function loadQuestion() {
+        const current = questions[currentIndex];
+
+        if (!current) {
+            alert("No quedan más preguntas.");
+            saveScore(prize);
+            return;
+        }
+
+        questionTextElement.textContent = current.question_text;
+        document.getElementById('answerA').textContent = `A) ${current.answer_a}`;
+        document.getElementById('answerB').textContent = `B) ${current.answer_b}`;
+        document.getElementById('answerC').textContent = `C) ${current.answer_c}`;
+        document.getElementById('answerD').textContent = `D) ${current.answer_d}`;
+
+        currentQuestionElement.textContent = currentIndex + 1;
+        correctAnswer = current.correct_answer;
     }
 
     function handleAnswer(selectedAnswerId) {
         const selectedLetter = selectedAnswerId.replace('answer', '').trim().toUpperCase();
         const correct = correctAnswer.trim().toUpperCase();
 
-        console.log("Has elegido:", selectedLetter);
-        console.log("Correcta era:", correct);
-
         if (selectedLetter === correct) {
             alert("¡Correcto!");
-            prize += prizePerQuestion[questionNumber - 1] || 0;
+            const level = questions[currentIndex].difficulty;
+            prize += getPrizeForLevel(level);
             accumulatedPrizeElement.textContent = prize;
-            questionNumber++;
+            currentIndex++;
 
-            // cada 5 preguntas subimos el nivel (5, 10 → cambia a 2, 3)
-            if ((questionNumber - 1) % questionsPerLevel === 0 && level < 3) {
-                level++;
-            }
-
-            if (questionNumber > 15) {
+            if (currentIndex >= questions.length) {
                 saveScore(prize);
             } else {
                 loadQuestion();
@@ -73,6 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function saveScore(finalScore) {
         const user_id = localStorage.getItem('user_id');
         localStorage.setItem('last_score', finalScore);
+
         if (!user_id) {
             alert("No se ha encontrado el usuario.");
             return;
@@ -88,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             const text = await response.text();
-            console.log("Respuesta bruta del servidor:", text);
+            console.log("Respuesta del servidor:", text);
 
             const result = JSON.parse(text);
             if (result.status === 'success') {
@@ -98,17 +112,15 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (error) {
             alert("Error al guardar puntuación.");
-            console.error("Error al conectar o parsear:", error);
+            console.error(error);
         }
     }
 
     document.querySelectorAll('.answer-btn').forEach(btn => {
-        console.log("Asignando evento a:", btn.id);
         btn.addEventListener('click', () => {
-            console.log("Click detectado en:", btn.id);
             handleAnswer(btn.id);
         });
     });
 
-    loadQuestion();
+    loadAllQuestions();
 });
