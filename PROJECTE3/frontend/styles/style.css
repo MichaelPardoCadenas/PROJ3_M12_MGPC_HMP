@@ -18,13 +18,22 @@ body {
   background-size: cover;
 }
 
+body.register-page {
+  background: none !important;
+}
+
+
+
+
 .login-container {
   display: flex;
   justify-content: center;
   align-items: center;
+
   min-height: 100vh;
   background: url("../assets/images/fondologin.png") no-repeat center center;
   background-size: cover;
+
 }
 
 .login-form {
@@ -163,5 +172,44 @@ main {
 }
 
 .answer-btn:hover {
+  background-color: #1F3977;
+}
+
+.ranking-style {
+  color: #FFD700;
+  text-align: center;
+  padding: 10px 15px;
+
+}
+
+.ranking-table {
+  margin: 0 auto;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.ranking-table th {
+  text-align: center;
+  color: #FFD700;
+  font-size: 3rem;
+
+}
+
+.ranking-btn {
+  background-color: #13244C;
+  color: #fff;
+  border: 3px solid #FFD700;
+  border-radius: 8px;
+  padding: 10px 15px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+
+
+}
+
+.ranking-btn:hover {
   background-color: #1F3977;
 }

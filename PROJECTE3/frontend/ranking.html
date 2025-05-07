@@ -1,22 +1,25 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <title>Ranking de Puntuaciones</title>
   <link rel="stylesheet" href="styles/style.css">
 </head>
-<body>
-  <h1>Ranking de jugadores</h1>
-  <table>
+
+<body class="ranking-style">
+  <h1 class="ranking-style">Ranking de jugadores</h1>
+  <table class="ranking-table">
     <thead>
       <tr>
-        <th>Usuario</th>
+        <th>Usuario|</th>
         <th>Puntuación</th>
       </tr>
     </thead>
     <tbody id="ranking-body"></tbody>
   </table>
-  <button onclick="window.location.href='index.html'">Volver al juego</button>
+  <button  class="ranking-btn" onclick="window.location.href='index.html'">Volver al juego</button>
 </body>
 <script src="scripts/ranking.js"></script>
+
 </html>
