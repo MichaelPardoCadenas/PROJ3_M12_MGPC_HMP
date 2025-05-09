@@ -1,0 +1,9 @@
+{
+  "name": "richorbust/api",
+  "description": "Backend del juego Rich or Bust con Slim Framework",
+  "type": "project",
+  "require": {
+    "slim/psr7": "^1.7",
+    "slim/slim": "^4.14"
+  }
+}

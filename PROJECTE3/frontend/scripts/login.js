@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const password = document.getElementById('password').value;
 
         try {
-            const response = await fetch('http://localhost/projecte3/backend/api/login.php', {
+            const response = await fetch('http://localhost/projecte3/backend/api/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = await response.json();
 
             if (result.status === 'success') {
-                localStorage.setItem('user_id', result.user_id);
+                localStorage.setItem('user_id', result.user.id);
                 window.location.href = 'index.html';
             } else {
                 alert(result.message);

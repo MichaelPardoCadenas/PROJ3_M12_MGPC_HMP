@@ -195,6 +195,13 @@ main {
 
 }
 
+.ranking-table td {
+  font-size: 1.5rem;
+  text-align: center;
+  padding: 10px 20px;
+}
+
+
 .ranking-btn {
   background-color: #13244C;
   color: #fff;
@@ -212,4 +219,13 @@ main {
 
 .ranking-btn:hover {
   background-color: #1F3977;
+}
+
+.login-link {
+  color: #FFD700;
+  text-decoration: none;
+  font-size: 1.2rem;
+  margin-top: 20px;
+  display: block;
+  text-align: center;
 }
