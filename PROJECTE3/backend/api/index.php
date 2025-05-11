@@ -7,11 +7,15 @@ require __DIR__ . '/../../vendor/autoload.php';
 require_once __DIR__ . '/../db/connection.php';
 
 $app = AppFactory::create();
+
+// Establece base path si es necesario
 $app->setBasePath('/api');
 
+// Middleware de enrutamiento y body parsing
 $app->addRoutingMiddleware();
 $app->addBodyParsingMiddleware();
 
+// Middleware CORS (opcional para desarrollo)
 $app->add(function (Request $request, $handler) {
     $response = $handler->handle($request);
     return $response
@@ -20,80 +24,28 @@ $app->add(function (Request $request, $handler) {
         ->withHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
 });
 
-$app->post('/login', function (Request $request, Response $response) use ($conn) {
-    $data = $request->getParsedBody();
-    $username = $data['username'] ?? '';
-    $password = $data['password'] ?? '';
-
-    $stmt = $conn->prepare("SELECT id, password FROM users WHERE username = ?");
-    $stmt->bind_param("s", $username);
-    $stmt->execute();
-    $stmt->store_result();
-
-    if ($stmt->num_rows === 1) {
-        $stmt->bind_result($id, $hashedPassword);
-        $stmt->fetch();
-        if (password_verify($password, $hashedPassword)) {
-            $response->getBody()->write(json_encode([
-                'status' => 'success',
-                'user' => ['id' => $id, 'username' => $username]
-            ]));
-            return $response->withHeader('Content-Type', 'application/json');
-        }
-    }
-
-    $response->getBody()->write(json_encode([
-        'status' => 'error',
-        'message' => 'Credenciales inválidas'
-    ]));
-    return $response->withStatus(401)->withHeader('Content-Type', 'application/json');
+// Ruta raíz opcional
+$app->get('/', function (Request $request, Response $response) {
+    $response->getBody()->write("Rich or Bust API");
+    return $response;
 });
 
-$app->post('/register', function (Request $request, Response $response) use ($conn) {
-    $data = $request->getParsedBody();
-    $username = $data['username'] ?? '';
-    $password = $data['password'] ?? '';
+// Ruta: GET /api/get_question.php
+$app->get('/get_question.php', function (Request $request, Response $response) use ($conn) {
+    require __DIR__ . '/get_question.php';
+    return $response;
+});
 
-    if (empty($username) || empty($password)) {
-        $response->getBody()->write(json_encode([
-            'status' => 'error',
-            'message' => 'Usuario y contraseña son obligatorios'
-        ]));
-        return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
-    }
+// Ruta: POST /api/submit_scores.php
+$app->post('/submit_scores.php', function (Request $request, Response $response) use ($conn) {
+    require __DIR__ . '/submit_scores.php';
+    return $response;
+});
 
-    $stmt = $conn->prepare("SELECT id FROM users WHERE username = ?");
-    $stmt->bind_param("s", $username);
-    $stmt->execute();
-    $stmt->store_result();
-
-    if ($stmt->num_rows > 0) {
-        $response->getBody()->write(json_encode([
-            'status' => 'error',
-            'message' => 'El usuario ya existe'
-        ]));
-        return $response->withStatus(409)->withHeader('Content-Type', 'application/json');
-    }
-
-    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-    $stmt = $conn->prepare("INSERT INTO users (username, password) VALUES (?, ?)");
-    $stmt->bind_param("ss", $username, $hashedPassword);
-
-    if ($stmt->execute()) {
-        $user_id = $stmt->insert_id;
-        $response->getBody()->write(json_encode([
-            'status' => 'success',
-            'message' => 'Usuario registrado correctamente',
-            'user' => ['id' => $user_id, 'username' => $username]
-        ]));
-    } else {
-        $response->getBody()->write(json_encode([
-            'status' => 'error',
-            'message' => 'Error al registrar el usuario'
-        ]));
-    }
-
-    return $response->withHeader('Content-Type', 'application/json');
+// Ruta: GET /api/get_scores.php
+$app->get('/get_scores.php', function (Request $request, Response $response) use ($conn) {
+    require __DIR__ . '/get_scores.php';
+    return $response;
 });
 
 $app->run();
