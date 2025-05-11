@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const all = [];
 
             for (let lvl = 1; lvl <= 3; lvl++) {
-                const res = await fetch(`http://localhost/projecte3/backend/api/get_question.php?level=${lvl}&amount=5`);
+                const res = await fetch(`/api/get_question.php?level=${lvl}&amount=5`);
                 const data = await res.json();
                 if (data.status === 'success') {
                     all.push(...data.questions);
@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            const response = await fetch('http://localhost/projecte3/backend/api/submit_scores.php', {
+            const response = await fetch('/api/submit_scores.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
