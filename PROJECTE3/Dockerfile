@@ -14,20 +14,17 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Habilita mod_rewrite
 RUN a2enmod rewrite
 
-# Copia todo el contenido del proyecto
+# Copia todo el proyecto
 COPY . /var/www/html
 
-# Cambia el DocumentRoot para servir el frontend
-RUN sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/frontend|' /etc/apache2/sites-available/000-default.conf
-
-# Ejecuta composer en la carpeta donde está composer.json
+# Ejecuta Composer si existe composer.json
 WORKDIR /var/www/html/backend/api
-RUN composer install
+RUN if [ -f composer.json ]; then composer install; fi
 
 # Establece el directorio por defecto
 WORKDIR /var/www/html
 
-# Ajusta permisos
+# Permisos
 RUN chown -R www-data:www-data /var/www/html
 
 EXPOSE 80
