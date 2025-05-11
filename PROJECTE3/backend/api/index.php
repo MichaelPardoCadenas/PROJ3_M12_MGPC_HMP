@@ -1,25 +1,21 @@
 <?php
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Psr\Http\Server\RequestHandlerInterface;
 use Slim\Factory\AppFactory;
-use Slim\Psr7\Response as SlimResponse;
 
-require __DIR__ . '/vendor/autoload.php';
+require __DIR__ . '/../../vendor/autoload.php';
 require_once __DIR__ . '/../db/connection.php';
 
-// Crear la app
 $app = AppFactory::create();
 
-$app->setBasePath('/projecte3/backend/api');
+// Si usas subdirectorio, ajústalo
+$app->setBasePath('/backend/api');
 
-
-// Middleware de enrutamiento y body parsing
 $app->addRoutingMiddleware();
 $app->addBodyParsingMiddleware();
 
 // Middleware CORS (opcional para desarrollo)
-$app->add(function (Request $request, RequestHandlerInterface $handler): SlimResponse {
+$app->add(function (Request $request, $handler) {
     $response = $handler->handle($request);
     return $response
         ->withHeader('Access-Control-Allow-Origin', '*')
@@ -27,7 +23,14 @@ $app->add(function (Request $request, RequestHandlerInterface $handler): SlimRes
         ->withHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
 });
 
-// Ruta POST /login
+// Redirección desde "/" a /register.html
+$app->get('/', function (Request $request, Response $response) {
+    return $response
+        ->withHeader('Location', '/frontend/register.html')
+        ->withStatus(302);
+});
+
+// API: login
 $app->post('/login', function (Request $request, Response $response) use ($conn) {
     $data = $request->getParsedBody();
     $username = $data['username'] ?? '';
@@ -41,7 +44,6 @@ $app->post('/login', function (Request $request, Response $response) use ($conn)
     if ($stmt->num_rows === 1) {
         $stmt->bind_result($id, $hashedPassword);
         $stmt->fetch();
-
         if (password_verify($password, $hashedPassword)) {
             $response->getBody()->write(json_encode([
                 'status' => 'success',
@@ -58,7 +60,7 @@ $app->post('/login', function (Request $request, Response $response) use ($conn)
     return $response->withStatus(401)->withHeader('Content-Type', 'application/json');
 });
 
-// Ruta POST /register
+// API: register
 $app->post('/register', function (Request $request, Response $response) use ($conn) {
     $data = $request->getParsedBody();
     $username = $data['username'] ?? '';
@@ -106,5 +108,4 @@ $app->post('/register', function (Request $request, Response $response) use ($co
     return $response->withHeader('Content-Type', 'application/json');
 });
 
-// Ejecutar la app
 $app->run();
