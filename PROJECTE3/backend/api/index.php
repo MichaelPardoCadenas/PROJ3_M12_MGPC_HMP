@@ -21,7 +21,7 @@ $app->add(function (Request $request, $handler) {
         ->withHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
 });
 
-// Ruta: login
+// Login
 $app->post('/login', function (Request $request, Response $response) use ($conn) {
     $data = $request->getParsedBody();
     $username = $data['username'] ?? '';
@@ -51,7 +51,7 @@ $app->post('/login', function (Request $request, Response $response) use ($conn)
     return $response->withStatus(401)->withHeader('Content-Type', 'application/json');
 });
 
-// Ruta: register
+// Register
 $app->post('/register', function (Request $request, Response $response) use ($conn) {
     $data = $request->getParsedBody();
     $username = $data['username'] ?? '';
@@ -99,22 +99,31 @@ $app->post('/register', function (Request $request, Response $response) use ($co
     return $response->withHeader('Content-Type', 'application/json');
 });
 
-// Ruta: obtener preguntas
+// Ruta para obtener preguntas
 $app->get('/get_question.php', function (Request $request, Response $response) {
-    require __DIR__ . '/get_question.php';
-    return $response;
+    ob_start();
+    include __DIR__ . '/get_question.php';
+    $output = ob_get_clean();
+    $response->getBody()->write($output);
+    return $response->withHeader('Content-Type', 'application/json');
 });
 
-// Ruta: enviar puntuaciones
+// Ruta para enviar puntuaciones
 $app->post('/submit_scores.php', function (Request $request, Response $response) {
-    require __DIR__ . '/submit_scores.php';
-    return $response;
+    ob_start();
+    include __DIR__ . '/submit_scores.php';
+    $output = ob_get_clean();
+    $response->getBody()->write($output);
+    return $response->withHeader('Content-Type', 'application/json');
 });
 
-// Ruta: obtener puntuaciones
+// Ruta para obtener puntuaciones
 $app->get('/get_scores.php', function (Request $request, Response $response) {
-    require __DIR__ . '/get_scores.php';
-    return $response;
+    ob_start();
+    include __DIR__ . '/get_scores.php';
+    $output = ob_get_clean();
+    $response->getBody()->write($output);
+    return $response->withHeader('Content-Type', 'application/json');
 });
 
 $app->run();
