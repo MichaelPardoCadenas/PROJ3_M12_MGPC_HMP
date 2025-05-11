@@ -1,7 +1,5 @@
-DirectoryIndex frontend/register.html
+RewriteEngine On
 
-<IfModule mod_rewrite.c>
-    RewriteEngine On
-    RewriteCond %{REQUEST_URI} ^/$
-    RewriteRule ^$ /frontend/register.html [L]
-</IfModule>
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^api/?(.*)$ backend/api/index.php [QSA,L]

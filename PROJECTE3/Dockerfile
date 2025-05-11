@@ -11,27 +11,23 @@ RUN apt-get update && apt-get install -y \
 # Instala Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Habilita mod_rewrite y permite .htaccess
-RUN a2enmod rewrite \
-    && sed -i 's/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf
+# Habilita mod_rewrite
+RUN a2enmod rewrite
 
-# Copia todo el contenido del proyecto
+# Copia todos los archivos del proyecto
 COPY . /var/www/html
 
-# Ejecuta composer en la carpeta de la API
+# Copia el .htaccess a la raíz del servidor
+COPY .htaccess /var/www/html/.htaccess
+
+# Ejecuta Composer en la carpeta API
 WORKDIR /var/www/html/backend/api
-RUN composer install --no-interaction --no-dev --optimize-autoloader
+RUN composer install
 
-# Vuelve al root de la web
+# Establece el directorio final
 WORKDIR /var/www/html
-
-# Copia el .htaccess de redirección en la raíz
-RUN printf 'DirectoryIndex frontend/register.html\n\n<IfModule mod_rewrite.c>\n  RewriteEngine On\n  RewriteCond %%{REQUEST_URI} ^/$\n  RewriteRule ^$ /frontend/register.html [L]\n</IfModule>\n' \
-    > /var/www/html/.htaccess
 
 # Ajusta permisos
 RUN chown -R www-data:www-data /var/www/html
 
 EXPOSE 80
-
-CMD ["apache2-foreground"]
