@@ -1,8 +1,6 @@
 RewriteEngine On
 
-# Habilita navegación limpia: /register -> /register.html
+# Si no es un archivo o directorio físico, pasa a index.php (Slim)
 RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^([a-zA-Z0-9_-]+)$ $1.html [L]
-DirectoryIndex disabled
-RedirectMatch 302 ^/$ /frontend/register.html
-    
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [QSA,L]
