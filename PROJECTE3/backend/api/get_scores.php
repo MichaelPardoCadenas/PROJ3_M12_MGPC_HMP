@@ -1,38 +1,14 @@
 <?php
-header("Content-Type: application/json");
-require_once '../db/connection.php';
+require_once __DIR__ . '/../db/connection.php';
 
-$stmt = $conn->prepare("
-  SELECT u.username, s.score
-  FROM scores s
-  JOIN users u ON s.user_id = u.id
-  ORDER BY s.score DESC
-  LIMIT 10
-");
+header('Content-Type: application/json');
 
-if (!$stmt->execute()) {
-  echo json_encode([
-    'status' => 'error',
-    'message' => 'No se pudo obtener el ranking'
-  ]);
-  exit;
-}
+$result = $conn->query("SELECT username, score FROM scores ORDER BY score DESC LIMIT 10");
 
-$result = $stmt->get_result();
 $scores = [];
 
 while ($row = $result->fetch_assoc()) {
-  $scores[] = [
-    'username' => $row['username'],
-    'score' => $row['score']
-  ];
+    $scores[] = $row;
 }
 
-echo json_encode([
-  'status' => 'success',
-  'scores' => $scores
-]);
-
-$stmt->close();
-$conn->close();
-?>
+echo json_encode($scores);
