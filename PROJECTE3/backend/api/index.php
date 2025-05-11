@@ -6,7 +6,7 @@ use Slim\Factory\AppFactory;
 use Slim\Psr7\Response as SlimResponse;
 
 require __DIR__ . '/vendor/autoload.php';
-require_once __DIR__ . '/../db/connection.php';
+require_once __DIR__ . '/../backend/db/connection.php';
 
 // Crear la app
 $app = AppFactory::create();
