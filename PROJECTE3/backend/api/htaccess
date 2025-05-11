@@ -3,3 +3,6 @@ RewriteEngine On
 # Habilita navegación limpia: /register -> /register.html
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^([a-zA-Z0-9_-]+)$ $1.html [L]
+DirectoryIndex disabled
+RedirectMatch 302 ^/$ /frontend/register.html
+    
