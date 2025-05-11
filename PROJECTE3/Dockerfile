@@ -1,6 +1,6 @@
 FROM php:8.2-apache
 
-# Instala extensiones necesarias
+# Instala dependencias necesarias
 RUN apt-get update && apt-get install -y \
     unzip \
     git \
@@ -8,26 +8,26 @@ RUN apt-get update && apt-get install -y \
     libzip-dev \
     && docker-php-ext-install mysqli pdo pdo_mysql
 
-# Instala Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
 # Habilita mod_rewrite
 RUN a2enmod rewrite
 
-# Copia todo el proyecto
-COPY . /var/www/html/
+# Copia solo los archivos necesarios
+COPY . /var/www/html
 
-# Establece el directorio de trabajo (puedes poner el backend/api si quieres que arranque desde ahí)
+# Cambia el DocumentRoot de Apache a /var/www/html/backend/api
+RUN sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/backend/api|' /etc/apache2/sites-available/000-default.conf
+
+# Establece el directorio de trabajo donde está index.php
 WORKDIR /var/www/html/backend/api
 
-# Instala dependencias de Composer (usa el composer.json desde raíz)
-RUN composer install --working-dir=/var/www/html
+# Instala Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+RUN composer install
 
-# Ajusta permisos
+# Establece permisos adecuados
 RUN chown -R www-data:www-data /var/www/html
 
-# Copia .htaccess si existe
-COPY .htaccess /var/www/html/.htaccess
+# Copia .htaccess si lo tienes en /backend/api
+COPY backend/api/.htaccess /var/www/html/backend/api/.htaccess
 
-# Expone el puerto 80
 EXPOSE 80
