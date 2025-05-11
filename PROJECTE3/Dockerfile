@@ -21,10 +21,12 @@ COPY . /var/www/html
 RUN sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/frontend|' /etc/apache2/sites-available/000-default.conf
 
 # Establece el directorio de trabajo para Composer
+WORKDIR /var/www/html
+RUN composer install
+
+# Luego lo puedes mover al directorio de la API si hace falta
 WORKDIR /var/www/html/api
 
-# Instala dependencias PHP
-RUN composer install
 
 # Ajusta permisos
 RUN chown -R www-data:www-data /var/www/html
