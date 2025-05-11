@@ -23,7 +23,7 @@ $app->add(function (Request $request, $handler) {
         ->withHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
 });
 
-// Redirección desde "/" a /register.html
+// Redirección desde "/" a /frontend/register.html
 $app->get('/', function (Request $request, Response $response) {
     return $response
         ->withHeader('Location', '/frontend/register.html')
@@ -109,3 +109,4 @@ $app->post('/register', function (Request $request, Response $response) use ($co
 });
 
 $app->run();
+?>
