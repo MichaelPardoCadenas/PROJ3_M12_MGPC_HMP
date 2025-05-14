@@ -1,18 +1,12 @@
 <?php
-$host = 'sql7.freesqldatabase.com	';     // o el host exacto que te dieron
-$user = 'sql7777905';                  // tu usuario
-$pass = '7pcVKI8EH4';               // tu contraseña
-$db   = 'sql7777905';                  // normalmente es igual que el usuario
+$host = getenv('DB_HOST') ?: 'localhost';
+$db_name = getenv('DB_NAME') ?: 'rich_or_bust';
+$db_user = getenv('DB_USER') ?: 'root';
+$db_password = getenv('DB_PASSWORD') ?: '';
 
-$conn = new mysqli($host, $user, $pass, $db);
+$conn = new mysqli($host, $db_user, $db_password, $db_name);
 
 if ($conn->connect_error) {
-    http_response_code(500);
-    echo json_encode([
-        'status' => 'error',
-        'message' => 'Error de conexión: ' . $conn->connect_error
-    ]);
-    exit;
+    die("Error de conexión: " . $conn->connect_error);
 }
-
-$conn->set_charset("utf8");
+?>

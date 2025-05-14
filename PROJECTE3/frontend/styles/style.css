@@ -229,3 +229,80 @@ main {
   display: block;
   text-align: center;
 }
+
+@media (max-width: 768px) {
+  .login-form {
+    padding: 20px;
+    max-width: 90%;
+  }
+
+  .game-container {
+    padding: 10px;
+  }
+
+  .info-container {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+    font-size: 1rem;
+  }
+
+  .logo-text {
+    font-size: 2rem;
+  }
+
+  .question-container {
+    font-size: 1.2rem;
+    padding: 10px;
+  }
+
+  .answers-container {
+    width: 100%;
+    padding: 0 10px;
+  }
+
+  .ranking-table th {
+    font-size: 2rem;
+  }
+
+  .ranking-table td {
+    font-size: 1.2rem;
+  }
+
+  .ranking-btn {
+    width: 90%;
+    margin: 10px auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo-text {
+    font-size: 1.5rem;
+  }
+
+  .question-container {
+    font-size: 1rem;
+  }
+
+  .answer-btn {
+    font-size: 0.9rem;
+    padding: 8px;
+  }
+
+  .login-title {
+    font-size: 2rem;
+  }
+
+  .input-group label {
+    font-size: 1rem;
+  }
+
+  .input-group input {
+    font-size: 0.9rem;
+  }
+
+  .login-btn {
+    font-size: 1rem;
+  }
+}
+

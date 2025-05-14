@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const password = document.getElementById('password').value;
 
         try {
-            const response = await fetch('/api/login', {
+            const response = await fetch('http://localhost/projecte3/backend/api/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

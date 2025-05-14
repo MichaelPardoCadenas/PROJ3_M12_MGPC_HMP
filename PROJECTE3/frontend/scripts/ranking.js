@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', async () => {
     try {
-        const response = await fetch('/api/get_scores.php');
+        const response = await fetch('http://localhost/projecte3/backend/api/get_scores.php');
         const result = await response.json();
 
         if (result.status === 'success') {

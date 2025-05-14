@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            const response = await fetch('/api/register', {
+            const response = await fetch('http://localhost/projecte3/backend/api/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

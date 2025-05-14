@@ -1,20 +1,38 @@
 <?php
-require_once __DIR__ . '/../db/connection.php';
+header("Content-Type: application/json");
+require_once '../db/connection.php';
 
-header('Content-Type: application/json');
+$level = isset($_GET['level']) ? intval($_GET['level']) : 1;
+$amount = isset($_GET['amount']) ? intval($_GET['amount']) : 1;
 
-$level = $_GET['level'] ?? 1;
-$amount = $_GET['amount'] ?? 5;
+if ($amount < 1 || $amount > 10) {
+    $amount = 1;
+}
 
-$stmt = $conn->prepare("SELECT id, question, correct_answer, wrong_answer1, wrong_answer2 FROM questions WHERE level = ? ORDER BY RAND() LIMIT ?");
+$stmt = $conn->prepare("SELECT * FROM questions WHERE difficulty = ? ORDER BY RAND() LIMIT ?");
 $stmt->bind_param("ii", $level, $amount);
 $stmt->execute();
 $result = $stmt->get_result();
 
 $questions = [];
-
 while ($row = $result->fetch_assoc()) {
-    $questions[] = $row;
+    $questions[] = [
+        'id' => $row['id'],
+        'question_text' => $row['question_text'],
+        'answer_a' => $row['answer_a'],
+        'answer_b' => $row['answer_b'],
+        'answer_c' => $row['answer_c'],
+        'answer_d' => $row['answer_d'],
+        'correct_answer' => $row['correct_answer'],
+        'difficulty' => $row['difficulty']
+    ];
 }
 
-echo json_encode($questions);
+echo json_encode([
+    'status' => 'success',
+    'questions' => $questions
+]);
+
+$stmt->close();
+$conn->close();
+?>

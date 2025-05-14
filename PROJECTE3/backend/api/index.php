@@ -1,19 +1,25 @@
 <?php
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Server\RequestHandlerInterface;
 use Slim\Factory\AppFactory;
+use Slim\Psr7\Response as SlimResponse;
 
 require __DIR__ . '/../../vendor/autoload.php';
 require_once __DIR__ . '/../db/connection.php';
 
+// Crear la app
 $app = AppFactory::create();
-$app->setBasePath('/api');
 
+$app->setBasePath('/projecte3/backend/api');
+
+
+// Middleware de enrutamiento y body parsing
 $app->addRoutingMiddleware();
 $app->addBodyParsingMiddleware();
 
-// Middleware CORS
-$app->add(function (Request $request, $handler) {
+// Middleware CORS (opcional para desarrollo)
+$app->add(function (Request $request, RequestHandlerInterface $handler): SlimResponse {
     $response = $handler->handle($request);
     return $response
         ->withHeader('Access-Control-Allow-Origin', '*')
@@ -21,7 +27,7 @@ $app->add(function (Request $request, $handler) {
         ->withHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
 });
 
-// Login
+// Ruta POST /login
 $app->post('/login', function (Request $request, Response $response) use ($conn) {
     $data = $request->getParsedBody();
     $username = $data['username'] ?? '';
@@ -35,6 +41,7 @@ $app->post('/login', function (Request $request, Response $response) use ($conn)
     if ($stmt->num_rows === 1) {
         $stmt->bind_result($id, $hashedPassword);
         $stmt->fetch();
+
         if (password_verify($password, $hashedPassword)) {
             $response->getBody()->write(json_encode([
                 'status' => 'success',
@@ -51,7 +58,7 @@ $app->post('/login', function (Request $request, Response $response) use ($conn)
     return $response->withStatus(401)->withHeader('Content-Type', 'application/json');
 });
 
-// Register
+// Ruta POST /register
 $app->post('/register', function (Request $request, Response $response) use ($conn) {
     $data = $request->getParsedBody();
     $username = $data['username'] ?? '';
@@ -99,31 +106,5 @@ $app->post('/register', function (Request $request, Response $response) use ($co
     return $response->withHeader('Content-Type', 'application/json');
 });
 
-// Ruta para obtener preguntas
-$app->get('/get_question.php', function (Request $request, Response $response) {
-    ob_start();
-    include __DIR__ . '/get_question.php';
-    $output = ob_get_clean();
-    $response->getBody()->write($output);
-    return $response->withHeader('Content-Type', 'application/json');
-});
-
-// Ruta para enviar puntuaciones
-$app->post('/submit_scores.php', function (Request $request, Response $response) {
-    ob_start();
-    include __DIR__ . '/submit_scores.php';
-    $output = ob_get_clean();
-    $response->getBody()->write($output);
-    return $response->withHeader('Content-Type', 'application/json');
-});
-
-// Ruta para obtener puntuaciones
-$app->get('/get_scores.php', function (Request $request, Response $response) {
-    ob_start();
-    include __DIR__ . '/get_scores.php';
-    $output = ob_get_clean();
-    $response->getBody()->write($output);
-    return $response->withHeader('Content-Type', 'application/json');
-});
-
+// Ejecutar la app
 $app->run();

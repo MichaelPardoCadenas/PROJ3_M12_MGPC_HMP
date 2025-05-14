@@ -1,6 +1,4 @@
 RewriteEngine On
-
-# Si no es un archivo o directorio físico, pasa a index.php (Slim)
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ index.php [QSA,L]
